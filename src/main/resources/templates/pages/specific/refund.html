@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>退款单详情</title>
+    <link rel="stylesheet" type="text/css" href="../../assets/styles/specific/refund.css"/>
+</head>
+<body style="overflow-x:hidden;">
+                    <div class="main-body">
+                        <div class="main-content1">
+                            <div class="title"><text>基本信息</text></div>
+                            <div class="title-content">
+                                <div class="title-content1">
+                                    <div class="title-content1-top1">退款单号：<input th:text="${refund.getRefundCode()}"></div>
+                                    <div class="title-content1-top2">退款金额：<input th:text="${refund.getRefundPrice()}"></div>
+                                    <div class="title-content1-top3">退款状态：<input th:text="${refund.getRefundState()}"></div>
+                                </div>
+                                <div class="title-content2">
+                                    <div class="title-content1-top1">退货单号：<input th:text="${refund.getOrderId()}"></div>
+                                    <div class="title-content1-top2">创建时间：<input th:text="${#dates.format(refund.createtd, 'yyyy-MM-dd HH:mm:ss')}"></input></div>
+                                    <div class="title-content1-top3">修改人：<input th:text="${refund.getModifiedUser()}"></div>
+                                </div>
+                                <div class="title-content3">
+                                    <div class="title-content1-top1">修改时间：<input th:text="${#dates.format(refund.updated, 'yyyy-MM-dd HH:mm:ss')}"></div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="main-content2">
+                            <div class="main-content2-title"><text style="font-size:18px;font-weight: 600;">退款商品</text></div>
+                            <table border="0" cellspacing="0" cellpadding="0" class="tab">
+                                <tr class="tr-title">
+                                    <th>商品编码</th>
+                                    <th>商品名称</th>
+                                    <th>商品单价</th>
+                                    <th>商品数量</th>
+                                    <th>商品总价</th>
+                                </tr>
+                                <th:block th:if="${returnGoodsList!=null}">
+                                    <tbody th:each="returnGoods,iterStat : ${returnGoodsList}">
+                                    <tr>
+                                        <td th:text="${returnGoods.getTbGoods().getGoodsCode()}"></td>
+                                        <td th:text="${returnGoods.getTbGoods().getGoodsName()}"></td>
+                                        <td th:text="${returnGoods.getTbGoods().getGoodsPrice()}"></td>
+                                        <td th:text="${returnGoods.getNumber()}"></td>
+                                        <td th:text="${returnGoods.getNumber()*returnGoods.getTbGoods().getGoodsPrice()}"></td>
+                                    </tr>
+                                    </tbody>
+
+                                </th:block>
+                                <th:block th:if="${returnGoodsList==null}">
+                                    <tbody th:each="goodOrder,iterStat : ${GoodsOrderList}">
+                                    <tr>
+                                        <td th:text="${goodOrder.getTbGoods().getGoodsCode()}"></td>
+                                        <td th:text="${goodOrder.getTbGoods().getGoodsName()}"></td>
+                                        <td th:text="${goodOrder.getTbGoods().getGoodsPrice()}"></td>
+                                        <td th:text="${goodOrder.getNum()}"></td>
+                                        <td th:text="${goodOrder.getTotalPrice()}"></td>
+                                    </tr>
+                                    </tbody>
+                                </th:block>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+</body>
+</html>

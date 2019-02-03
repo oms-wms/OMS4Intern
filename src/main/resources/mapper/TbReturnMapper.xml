@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.connext.oms.mapper.TbReturnMapper">
+  <resultMap id="BaseResultMap" type="cn.com.connext.oms.entity.TbReturn">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="return_id" jdbcType="INTEGER" property="returnId" />
+    <result column="return_code" jdbcType="VARCHAR" property="returnCode" />
+    <result column="return_state" jdbcType="VARCHAR" property="returnState" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="return_price" jdbcType="DOUBLE" property="returnPrice" />
+    <result column="created" jdbcType="TIMESTAMP" property="created" />
+    <result column="modified_user" jdbcType="VARCHAR" property="modifiedUser" />
+    <result column="updated" jdbcType="TIMESTAMP" property="updated" />
+  </resultMap>
+
+  <!--生成退货单-->
+  <insert id="addReturnOrder">
+    INSERT INTO tb_return
+    (return_code,return_state,order_id,return_price,created,modified_user,updated,return_type) VALUES (#{returnCode},#{returnState},#{orderId},#{returnPrice},#{created},#{modifiedUser},#{updated},#{returnType})
+  </insert>
+
+  <!--根据id查找退货单状态-->
+  <select id="selectReturnOrderStateById" resultType="String">
+    SELECT return_state
+    FROM tb_return
+    WHERE return_id = #{returnId}
+  </select>
+
+  <!--更改退货单状态为“已取消”-->
+  <update id="returnOrderCancel">
+    UPDATE tb_return
+    SET return_state = '退货取消',modified_user = #{modifiedUser},updated = #{updated}
+    WHERE return_id = #{returnId}
+  </update>
+
+  <!--根据订单id查找订单生成时间-->
+  <select id="selectCreatedById">
+    SELECT created
+    FROM tb_return
+    WHERE return_id = #{returnId}
+  </select>
+
+  <!--审核过后更改退货单的状态-->
+  <update id="updateReturnOrderStateById">
+    UPDATE tb_return
+    SET return_state = #{state},modified_user = #{user},updated = #{updated}
+    WHERE return_id = #{returnId}
+  </update>
+
+  <!--根据商品id查看商品单价-->
+  <select id="getPriceByGoodId" resultType="double">
+    SELECT goods_price
+    FROM tb_goods
+    WHERE goods_id = #{goodId}
+  </select>
+
+  <!--添加退货单对应的商品表-->
+  <insert id="addReturnOrderGoods">
+    INSERT tb_return_goods
+    (order_id,goods_id,number)VALUES (#{orderId},#{goodsId},#{number})
+  </insert>
+
+  <!--根据退货单号查询订单号-->
+  <select id="selectOrderIdByReturnId" resultType="Integer">
+    SELECT order_id
+    FROM tb_return
+    WHERE return_id = #{returnId}
+  </select>
+
+  <!--生成入库单-->
+  <insert id="createInputOrder">
+    INSERT tb_input
+    (input_code,order_id,input_state,created,updated,synchronize_state)VALUES (#{inputCode},#{orderId},#{inputState},#{created},#{updated},#{synchronizeState})
+  </insert>
+
+  <!--根据退货单id查找退货单详情-->
+  <select id="getTbReturnById" resultType="TbReturn">
+    SELECT *
+    FROM tb_return
+    WHERE return_id = #{returnId}
+  </select>
+
+  <!--查找所有符合查询条件的入库单-->
+  <select id="getAllInputOrders" resultType="cn.com.connext.oms.commons.dto.InputDTO">
+     SELECT
+        a.input_code,
+        a.order_id,
+        a.input_state,
+        a.created,
+        a.updated,
+        a.synchronize_state,
+        b.return_code,
+        b.modified_user
+
+         FROM tb_input a INNER JOIN  tb_return b ON a.order_id = b.order_id
+            <choose>
+                <when test="tbInput.inputCode !=null and tbInput.inputCode != ''">
+                    WHERE input_code LIKE "%"#{tbInput.inputCode}"%"
+                </when>
+                <when test="tbInput.inputState !=null and tbInput.inputState != ''">
+                    WHERE input_state LIKE "%"#{tbInput.inputState}"%"
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+     ORDER BY a.updated DESC
+  </select>
+
+  <!--根据订单id查找退货单信息-->
+  <select id="getInputByOrderId" resultType="TbInput">
+    SELECT *
+    FROM tb_input
+    WHERE order_id = #{orderId}
+  </select>
+
+  <!--根据订单id查找退货单商品信息-->
+  <select id="getTbReturnGoodsById" resultType="TbReturnGoods">
+    SELECT *
+    FROM tb_return_goods
+    WHERE order_id = #{orderId}
+
+  </select>
+
+  <!--根据商品id查询商品信息-->
+  <select id="getGoodsById" resultType="TbGoods">
+    SELECT *
+    FROM tb_goods
+    WHERE goods_id = #{goodsId}
+  </select>
+
+
+
+
+</mapper>

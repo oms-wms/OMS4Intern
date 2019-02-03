@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.connext.oms.mapper.TbOrderMapper">
+  <resultMap id="BaseResultMap" type="cn.com.connext.oms.entity.TbOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="order_code" jdbcType="VARCHAR" property="orderCode" />
+    <result column="channel_code" jdbcType="VARCHAR" property="channelCode" />
+    <result column="order_state" jdbcType="VARCHAR" property="orderState" />
+    <result column="order_source" jdbcType="VARCHAR" property="orderSource" />
+    <result column="purchase_time" jdbcType="VARCHAR" property="purchaseTime" />
+    <result column="basic_state" jdbcType="VARCHAR" property="basicState" />
+    <result column="modified_user" jdbcType="VARCHAR" property="modifiedUser" />
+    <result column="customer_id" jdbcType="INTEGER" property="customerId" />
+    <result column="updated" jdbcType="TIMESTAMP" property="updated" />
+    <result column="payment_state" jdbcType="VARCHAR" property="paymentState" />
+    <result column="payment_way" jdbcType="VARCHAR" property="paymentWay" />
+    <result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime" />
+    <result column="delivery_warehouse" jdbcType="VARCHAR" property="deliveryWarehouse" />
+    <result column="delivery_company" jdbcType="VARCHAR" property="deliveryCompany" />
+    <result column="delivery_code" jdbcType="VARCHAR" property="deliveryCode" />
+    <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
+    <result column="sum_price" jdbcType="DOUBLE" property="sumPrice" />
+    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
+    <association property="tbReceiver" javaType="cn.com.connext.oms.entity.TbReceiver">
+      <!--<id column="receiver_id" jdbcType="INTEGER" property="receiverId" />-->
+      <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+      <result column="receiver_phone" jdbcType="VARCHAR" property="receiverPhone" />
+      <result column="receiver_mobile" jdbcType="VARCHAR" property="receiverMobile" />
+      <result column="receiver_state" jdbcType="VARCHAR" property="receiverState" />
+      <result column="receiver_city" jdbcType="VARCHAR" property="receiverCity" />
+      <result column="receiver_district" jdbcType="VARCHAR" property="receiverDistrict" />
+      <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
+      <result column="receiver_zip" jdbcType="VARCHAR" property="receiverZip" />
+      <result column="created" jdbcType="TIMESTAMP" property="created" />
+      <!--<result column="updated" jdbcType="TIMESTAMP" property="updated" />-->
+      <!--<result column="order_id" jdbcType="INTEGER" property="orderId" />-->
+    </association>
+    <association property="tbGoodsOrder" javaType="cn.com.connext.oms.entity.TbGoodsOrder">
+      <id column="goods_order_id" jdbcType="INTEGER" property="goodsOrderId" />
+      <!--<result column="order_id" jdbcType="INTEGER" property="orderId" />-->
+      <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+      <result column="num" jdbcType="INTEGER" property="num" />
+      <result column="total_price" jdbcType="DOUBLE" property="totalPrice" />
+    </association>
+    <association property="tbGoods" javaType="cn.com.connext.oms.entity.TbGoods">
+      <!--<id column="goods_id" jdbcType="INTEGER" property="goodsId" />-->
+      <result column="goods_code" jdbcType="VARCHAR" property="goodsCode" />
+      <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+      <result column="goods_price" jdbcType="DOUBLE" property="goodsPrice" />
+    </association>
+  </resultMap>
+
+
+  <select id="getAllOrder" resultMap="BaseResultMap">
+      SELECT
+          a.order_id,
+          a.order_code,
+          a.channel_code,
+          a.order_state,
+          a.order_source,
+          a.purchase_time,
+          a.basic_state,
+          a.modified_user,
+          a.customer_id,
+          a.updated,
+          a.payment_state,
+          a.payment_way,
+          a.payment_time,
+          a.delivery_warehouse,
+          a.delivery_company,
+          a.delivery_code,
+          a.delivery_time,
+          a.sum_price,
+          a.receiver_id,
+          a.remark,
+          b.created,
+--           b.order_id,
+          b.receiver_address,
+          b.receiver_city,
+          b.receiver_district,
+--           b.receiver_id,
+          b.receiver_mobile,
+--           b.receiver_mobile,
+          b.receiver_name,
+          b.receiver_phone,
+          b.receiver_state,
+          b.receiver_zip,
+--           b.updated,
+          c.goods_id,
+          c.goods_code,
+          c.goods_name,
+          c.goods_price,
+--           d.goods_id,
+          d.goods_order_id,
+--           d.order_id,
+          d.num,
+          d.total_price
+      FROM
+          tb_order a
+              left join tb_receiver b on a.order_id = b.order_id
+              left join tb_goods_order d on a.order_id = d.order_id
+              left join tb_goods c on d.goods_id = c.goods_id
+      group by a.order_id
+  </select>
+
+    <!-- yonyong-->
+    <select id="getOrderDetailsByOrderId" resultMap="BaseResultMap" parameterType="int">
+           SELECT
+      a.order_id,
+      a.order_code,
+      a.channel_code,
+      a.order_state,
+      a.order_source,
+      a.purchase_time,
+      a.basic_state,
+      a.modified_user,
+      a.customer_id,
+      a.updated,
+      a.payment_state,
+      a.payment_way,
+      a.payment_time,
+      a.delivery_warehouse,
+      a.delivery_company,
+      a.delivery_code,
+      a.delivery_time,
+      a.sum_price,
+      a.receiver_id,
+      a.remark,
+      b.created,
+      b.order_id,
+      b.receiver_address,
+      b.receiver_city,
+      b.receiver_district,
+      b.receiver_id,
+      b.receiver_mobile,
+      b.receiver_mobile,
+      b.receiver_name,
+      b.receiver_phone,
+      b.receiver_state,
+      b.receiver_zip,
+      b.updated,
+      c.goods_id,
+      c.goods_code,
+      c.goods_name,
+      c.goods_price,
+      d.goods_id,
+      d.goods_order_id,
+      d.order_id,
+      d.num,
+      d.total_price
+  FROM
+      tb_order a,
+      tb_receiver b,
+      tb_goods c,
+      tb_goods_order d
+  WHERE
+      a.order_id = d.order_id
+  AND d.goods_id = c.goods_id
+  AND a.order_id = b.order_id
+  and a.order_id=#{id}
+    </select>
+
+    <select id="getAllById" parameterType="Integer" resultType="cn.com.connext.oms.commons.dto.OrderGoodsReceiverDto">
+        select * from tb_order o
+       /* inner join tb_goods_order go on go.order_id=o.order_id
+        inner join tb_goods g on g.goods_id=go.goods_id*/
+        INNER JOIN tb_receiver r on r.order_id=o.order_id
+        WHERE o.order_id=#{orderId}
+    </select>
+
+    <select id="getOrderByOrderId" resultMap="BaseResultMap">
+        SELECT
+         a.order_id,
+      a.order_code,
+      a.channel_code,
+      a.order_state,
+      a.order_source,
+      a.purchase_time,
+      a.basic_state,
+      a.modified_user,
+      a.customer_id,
+      a.updated,
+      a.payment_state,
+      a.payment_way,
+      a.payment_time,
+      a.delivery_warehouse,
+      a.delivery_company,
+      a.delivery_code,
+      a.delivery_time,
+      a.sum_price,
+      a.receiver_id,
+      a.remark
+      FROM tb_order as a
+      WHERE a.order_id = #{id}
+
+    </select>
+
+    <select id="selectCreatedById" resultType="java.util.Date">
+        SELECT purchase_time
+        FROM tb_order
+        WHERE order_id = #{orderId}
+    </select>
+    <select id="getOrderById" parameterType="Integer" resultMap="BaseResultMap">
+        select * from tb_order where order_id=#{orderId}
+    </select>
+    <select id="getOrderByCode" parameterType="String" resultMap="BaseResultMap">
+        select * from tb_order where order_code=#{orderCode}
+    </select>
+
+    <update id="updateOrderStatue" parameterType="tbOrder">
+         update tb_order set order_state=#{orderState} where order_id=#{orderId}
+    </update>
+
+    <update id="updateOrderListStatue" parameterType="java.util.List">
+        UPDATE tb_order
+        SET order_state = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.orderState}
+        </foreach>
+        END, modified_user = CASE order_id
+        <foreach collection="list" item="item">
+          WHEN #{item.orderId} THEN #{item.modifiedUser}
+        </foreach>
+        END, updated = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.updated}
+        </foreach>
+        END,basic_state = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.basicState}
+        </foreach>
+        END
+        WHERE
+        order_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.orderId}
+        </foreach>
+    </update>
+
+    <update id="updateOrderListBasicRemark" parameterType="java.util.List">
+        UPDATE tb_order
+        SET basic_state = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.basicState}
+        </foreach>
+        END, modified_user = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.modifiedUser}
+        </foreach>
+        END, updated = CASE order_id
+        <foreach collection="list" item="item">
+            WHEN #{item.orderId} THEN #{item.updated}
+        </foreach>
+        END
+        WHERE
+        order_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <!--订单模糊查询加列表-->
+    <select id="selectAllOrders" resultType="cn.com.connext.oms.commons.dto.OrderGoodsReceiverDto">
+        SELECT
+        a.order_id,
+        order_code,
+        channel_code,
+        order_state,
+        order_source,
+        purchase_time,
+        basic_state,
+        modified_user,
+        customer_id,
+        a.updated,
+        payment_state,
+        payment_way,
+        payment_time,
+        delivery_warehouse,
+        delivery_company,
+        delivery_code,
+        delivery_time,
+        sum_price,
+        a.receiver_id,
+        remark,
+        receiver_name,
+        receiver_state,
+        receiver_city,
+        receiver_district,
+        receiver_address
+        FROM
+        tb_order a
+        INNER JOIN tb_receiver b on a.order_id=b.order_id
+        <choose>
+            <when test="orderGoodsReceiverDto.deliveryCode !=null and orderGoodsReceiverDto.deliveryCode != ''">
+                WHERE delivery_code LIKE "%"#{orderGoodsReceiverDto.deliveryCode}"%"
+            </when>
+            <when test="orderGoodsReceiverDto.orderState !=null and orderGoodsReceiverDto.orderState != ''">
+                WHERE order_state LIKE "%"#{orderGoodsReceiverDto.orderState}"%"
+            </when>
+            <when test="orderGoodsReceiverDto.orderCode !=null and orderGoodsReceiverDto.orderCode != ''">
+                WHERE order_code LIKE "%"#{orderGoodsReceiverDto.orderCode}"%"
+            </when>
+            <when test="orderGoodsReceiverDto.receiverName !=null and orderGoodsReceiverDto.receiverName != ''">
+                WHERE receiver_name LIKE "%"#{orderGoodsReceiverDto.receiverName}"%"
+            </when>
+
+            <otherwise>
+            </otherwise>
+        </choose>
+        ORDER BY updated DESC
+    </select>
+
+
+</mapper>

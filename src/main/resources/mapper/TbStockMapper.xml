@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.connext.oms.mapper.TbStockMapper">
+  <resultMap id="BaseResultMap" type="cn.com.connext.oms.entity.TbStock">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="stock_id" jdbcType="INTEGER" property="stockId" />
+    <result column="available_stock" jdbcType="INTEGER" property="availableStock" />
+    <result column="locked_stock" jdbcType="INTEGER" property="lockedStock" />
+    <result column="total_stock" jdbcType="INTEGER" property="totalStock" />
+    <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
+  </resultMap>
+  <select id="getStockByGoodsId" resultMap="BaseResultMap">
+        select * from tb_stock where goods_id=#{goodsId}
+    </select>
+  <update id="updateStockList" parameterType="java.util.List">
+    UPDATE tb_stock
+    SET available_stock = CASE stock_id
+    <foreach collection="list" item="item">
+      WHEN #{item.stockId} THEN #{item.availableStock}
+    </foreach>
+    END, locked_stock = CASE stock_id
+    <foreach collection="list" item="item">
+      WHEN #{item.stockId} THEN #{item.lockedStock}
+    </foreach>
+    END, total_stock = CASE stock_id
+    <foreach collection="list" item="item">
+      WHEN #{item.stockId} THEN #{item.totalStock}
+    </foreach>
+    END
+    WHERE
+    stock_id in
+    <foreach collection="list" item="item" open="(" separator="," close=")">
+      #{item.stockId}
+    </foreach>
+  </update>
+
+    <!--根据商品编号修改商品总库存-->
+    <update id="updateStock">
+        update tb_stock set total_stock=#{totalStock} where goods_id=#{goodsId}
+    </update>
+
+    <!--根据商品编码修改商品的锁定库存-->
+    <update id="updateLockdAndAvailable" parameterType="cn.com.connext.oms.entity.TbStock">
+        update tb_stock set locked_stock=locked_stock+#{num} where goods_id=#{goodsId}
+    </update>
+    <!--根据锁定库存，计算商品的可用库存-->
+    <update id="updateAvailable" parameterType="cn.com.connext.oms.entity.TbStock">
+        update tb_stock set available_stock=#{availableStock} where goods_id=#{goodsId}
+    </update>
+    <!--根据商品编码查询商品的全部信息-->
+    <select id="getLocked" resultType="cn.com.connext.oms.entity.TbStock">
+        select * from tb_stock where goods_id=#{goodsId}
+    </select>
+    <!--新增商品的库存信息-->
+  <insert id="addStock" parameterType="cn.com.connext.oms.commons.dto.GoodsStockDto">
+    insert into tb_stock (locked_stock,goods_id) values(#{lockedStock},#{goodsId})
+  </insert>
+
+</mapper>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>表格</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="/assets/javascript/popup/popup.js"></script>
+    <script src="/assets/javascript/check.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/assets/styles/search.css">
+    <style>
+        .table-box {
+            border: 1px solid #ddd;
+        }
+        .table tbody tr td{
+            height: 30px;
+        }
+        .table thead tr th {
+            border-bottom: 1px;
+            text-align: center;
+        }
+        .table input[type=checkbox] {
+            margin: 0;
+        }
+        .btn-div {
+            padding: 10px;
+        }
+        .table tbody td {
+            text-align: center;
+        }
+        .table tbody tr:hover {
+            background-color: #e6f7ff;
+        }
+    </style>
+</head>
+
+<body style="overflow-x:hidden;background:#f3f3f3;">
+<div id="refundDiv">
+<div class="btn-div">
+    <button type="button" class="btn btn-primary" onclick="refund()">退款</button>
+    <button type="button" class="btn btn-primary" id="MyAbnormalModel" onclick="detailRefund()" >查看退款单详情</button>
+    <div class="search-box">
+        <form id="frm" action="/index/getSearchRefund">
+            <input hidden name='page' value="1">
+            <select name="select" id="select">
+                <option value="">--请选择--</option>
+                <option value="orderCode">订单编码</option>
+                <option value="refundState">退款状态</option>
+            </select>
+            <input type="text" id="mySelect" name="mySelect">
+            <button type="button" class="btn btn-success" onclick="mySearch()">搜索</button>
+        </form>
+    </div>
+</div>
+<div>
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th>批量</th>
+            <th>退款单号</th>
+            <th>退款金额</th>
+            <th>退款状态</th>
+            <th>退货id</th>
+            <th>订单id</th>
+            <th>创建时间</th>
+            <th>修改时间</th>
+            <th>修改人</th>
+        </tr>
+        </thead>
+        <tbody id="tbody" th:each="refund,iterStat : ${map.get('refundList')}">
+        <tr>
+            <td><input type='checkbox' name='checkid' th:value='${refund.refundId}'></td>
+            <td th:text="${refund.refundCode}"></td>
+            <td th:text="${refund.refundPrice}"></td>
+            <td th:text="${refund.refundState}"></td>
+            <td th:text="${refund.returnId}"></td>
+            <td th:text="${refund.orderId}"></td>
+            <td th:text="${#dates.format(refund.createtd, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(refund.updated, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${refund.modifiedUser}"></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+<!-- 弹出框 -->
+<div class="modal fade" id="demoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">title</h4>
+            </div>
+            <div class="modal-body">提示内容</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="footer-pager">
+    <span>共<span id="pageCount" th:text="${map.get('pageCount')}"></span>页，当前第<span id="page" th:text="${map.get('page')}"></span>页，总共<span  th:text="${map.get('dataSize')}"></span>条数据</span>
+
+    <ul class="pagination">
+        <th:block th:if="${map.get('prePage')==1}">
+            <li><a th:href="@{/index/getRefundIndex(page=${map.get('page')-1},size=4)}">&laquo;</a></li>
+        </th:block>
+        <th:block th:if="${map.get('prePage')==0}">
+            <li><a href="#" disabled="true">&laquo;</a></li>
+        </th:block>
+
+        <th:block th:each="pageSize,iterStat : ${map.get('pageSize')}">
+            <th:block th:if="${map.get('page')==iterStat.index+1}">
+                <li class="active"><a th:href="@{/index/getRefundIndex(page=${iterStat.index+1},size=4)}" th:text="${iterStat.index+1}"></a></li>
+            </th:block>
+            <th:block th:if="${map.get('page')!=iterStat.index+1}">
+                <th:block th:if="(${map.get('page')<=8 and iterStat.index+1>8}) or (${map.get('page')>8} and (${iterStat.index+1<map.get('page')-7 or iterStat.index+1>map.get('page')}))">
+                    <li ><a hidden th:href="@{/index/getRefundIndex(page=${iterStat.index+1},size=4)}" th:text="${iterStat.index+1}"></a></li>
+
+                </th:block>
+                <th:block th:if="!((${map.get('page')<=8 and iterStat.index+1>8}) or (${map.get('page')>8} and (${iterStat.index+1<map.get('page')-7 or iterStat.index+1>map.get('page')})))">
+                    <li ><a th:href="@{/index/getRefundIndex(page=${iterStat.index+1},size=4)}" th:text="${iterStat.index+1}"></a></li>
+
+                </th:block>
+
+            </th:block>
+        </th:block>
+
+        <th:block th:if="${map.get('nextPage')==1}">
+            <li><a th:href="@{/index/getRefundIndex(page=${map.get('page')+1},size=4)}">&raquo;</a></li>
+        </th:block>
+        <th:block th:if="${map.get('nextPage')==0}">
+            <li><a href="#" disabled="true">&raquo;</a></li>
+        </th:block>
+
+    </ul>
+</div>
+<div id="popup" class="popup" >
+    <div class="title">
+        <p>退款单详情</p>
+        <span></span>
+        <span>x</span>
+    </div>
+    <div class="cont">
+        <iframe id="iframe" src="" scrolling="auto" style="width:100%;height:100%;border:0px;"></iframe></div>
+</div>
+
+
+<script>
+    $(function () {
+        $('#popup').popup();
+        $("body").css("overflow-y", "hidden");
+    });
+</script>
+
+</div>
+</body>
+<script type="text/javascript" src="/page/js/refund.js"></script>
+<script>
+    function detailRefund() {
+        var arr=[];//定义一个数组
+        var b=$("input[type='checkbox']:checked").length
+        var a=$('input[name="checkid"]:checked').val();
+        if(b==1){
+            $("#iframe").attr("src","/index/refundDetail?refundId="+a);
+        }else{
+
+        }
+
+    }
+</script>
+</html>
